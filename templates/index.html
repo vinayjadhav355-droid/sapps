@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Paramahamsa Vidyaniketana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+
+  <!-- ── Ambient background ───────────────────────── -->
+  <div class="ambient">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <!-- ── Header ───────────────────────────────────── -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+       <img src="{{ url_for('static', filename='images/gpg-logo.png') }}" class="logo-mark" alt="GPG Logo">
+        <div>
+          <span class="logo-name">Paramahamsa Vidyaniketana</span>
+          <span class="logo-sub">Intelligent Student Performance Prediction System</span>
+        </div>
+      </div>
+      <div class="header-stats" id="header-stats">
+        <div class="stat-pill" id="stat-students"><span class="dot"></span>Loading…</div>
+        <button id="btn-manage-students">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Manage Students
+        </button>
+        <button id="btn-add-student">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Add Student
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Main ─────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Search panel -->
+    <section class="search-panel">
+      <h1 class="hero-title">Paramahamsa Vidyaniketana<br/><em>Student Analysis Tool</em></h1>
+      <p class="hero-sub">“Enter a student’s name to receive instant performance analysis and a personalized report.”</p>
+
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Type student name…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button id="search-btn" class="search-btn">
+            <span class="btn-text">Analyse</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+        <div id="autocomplete" class="autocomplete hidden"></div>
+        <div id="search-error" class="search-error hidden"></div>
+      </div>
+
+      <!-- Class distribution pills -->
+      <div class="dist-row" id="dist-row"></div>
+    </section>
+
+    <!-- Result panel (hidden until search) -->
+    <section class="result-panel hidden" id="result-panel">
+
+      <!-- ── Top bar ── -->
+      <div class="result-topbar">
+        <button class="back-btn" id="back-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <div id="category-chip" class="category-chip">—</div>
+      </div>
+
+      <!-- ── Student header ── -->
+      <div class="student-header">
+        <div class="avatar" id="res-avatar">A</div>
+        <div class="student-meta">
+          <h2 id="res-name">—</h2>
+          <div class="meta-row">
+            <span id="res-attendance-badge">—</span>
+            <span class="sep">·</span>
+            <span id="res-confidence">Model confidence: —</span>
+          </div>
+        </div>
+        <div class="overall-score-box">
+          <div class="score-ring-wrap">
+            <svg class="score-ring" viewBox="0 0 80 80">
+              <circle class="ring-track" cx="40" cy="40" r="32"/>
+              <circle class="ring-fill" id="ring-fill" cx="40" cy="40" r="32"/>
+            </svg>
+            <div class="ring-inner">
+              <span id="res-overall">—</span>
+              <span class="ring-denom">/ 100</span>
+            </div>
+          </div>
+          <span class="overall-label">Avg Score</span>
+        </div>
+      </div>
+
+      <!-- ── Subject grid ── -->
+      <div class="section-label">Subject Breakdown</div>
+      <div class="subject-grid" id="subject-grid"></div>
+
+      <!-- ── Performance headline ── -->
+      <div class="section-label">Academic Assessment</div>
+      <div class="assessment-card" id="assessment-card">
+        <div class="assessment-headline" id="assessment-headline">—</div>
+        <p class="assessment-overview" id="assessment-overview">—</p>
+      </div>
+
+      <!-- ── Action plan ── -->
+      <div class="section-label">Recommended Action Plan</div>
+      <ol class="action-list" id="action-list"></ol>
+
+      <!-- ── Weak subject tips ── -->
+      <div id="weak-section" class="hidden">
+        <div class="section-label">Subject-Specific Guidance</div>
+        <div class="tips-grid" id="tips-grid"></div>
+      </div>
+
+      <!-- ── Parent note ── -->
+      <div class="section-label">Note for Parents / Guardians</div>
+      <div class="parent-card" id="parent-card">—</div>
+
+    </section>
+
+
+  <!-- ── Add Student Modal ──────────────────────── -->
+  <div class="modal-overlay hidden" id="add-modal">
+    <div class="modal-box">
+
+      <div class="modal-header">
+        <span class="modal-title">➕ Add New Student</span>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+
+      <!-- Step indicator -->
+      <div class="step-indicator">
+        <div class="step-dot active" id="sdot-1">1</div>
+        <span class="step-label">Basic Details</span>
+        <div class="step-line"></div>
+        <div class="step-dot" id="sdot-2">2</div>
+        <span class="step-label">Marks Entry</span>
+      </div>
+
+      <!-- Step 1: Basic Details -->
+      <div class="form-step active" id="form-step-1">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Student Name *</label>
+            <input type="text" id="f-name" placeholder="e.g. Ravi Kumar"/>
+          </div>
+          <div class="form-group">
+            <label>Roll Number</label>
+            <input type="text" id="f-roll" placeholder="e.g. 24"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Attendance (%) *</label>
+          <input type="number" id="f-attendance" min="0" max="100" placeholder="0 – 100"/>
+          <span class="field-hint">Enter percentage between 0 and 100</span>
+        </div>
+      </div>
+
+      <!-- Step 2: Marks Entry -->
+      <div class="form-step" id="form-step-2">
+
+        <div class="subj-marks-block">
+          <div class="subj-marks-title">📐 Mathematics</div>
+          <div class="subj-marks-row">
+            <div class="form-group"><label>Assignment <small>/25</small></label><input type="number" id="a-Maths" min="0" max="25" placeholder="0–25"/></div>
+            <div class="form-group"><label>Internal <small>/50</small></label><input type="number" id="i-Maths" min="0" max="50" placeholder="0–50"/></div>
+            <div class="form-group"><label>Exam <small>/100</small></label><input type="number" id="e-Maths" min="0" max="100" placeholder="0–100"/></div>
+          </div>
+        </div>
+
+        <div class="subj-marks-block">
+          <div class="subj-marks-title">📖 English</div>
+          <div class="subj-marks-row">
+            <div class="form-group"><label>Assignment <small>/25</small></label><input type="number" id="a-English" min="0" max="25" placeholder="0–25"/></div>
+            <div class="form-group"><label>Internal <small>/50</small></label><input type="number" id="i-English" min="0" max="50" placeholder="0–50"/></div>
+            <div class="form-group"><label>Exam <small>/100</small></label><input type="number" id="e-English" min="0" max="100" placeholder="0–100"/></div>
+          </div>
+        </div>
+
+        <div class="subj-marks-block">
+          <div class="subj-marks-title">🔬 Science</div>
+          <div class="subj-marks-row">
+            <div class="form-group"><label>Assignment <small>/25</small></label><input type="number" id="a-Science" min="0" max="25" placeholder="0–25"/></div>
+            <div class="form-group"><label>Internal <small>/50</small></label><input type="number" id="i-Science" min="0" max="50" placeholder="0–50"/></div>
+            <div class="form-group"><label>Exam <small>/100</small></label><input type="number" id="e-Science" min="0" max="100" placeholder="0–100"/></div>
+          </div>
+        </div>
+
+        <div class="subj-marks-block">
+          <div class="subj-marks-title">✍️ Kannada</div>
+          <div class="subj-marks-row">
+            <div class="form-group"><label>Assignment <small>/25</small></label><input type="number" id="a-Kannada" min="0" max="25" placeholder="0–25"/></div>
+            <div class="form-group"><label>Internal <small>/50</small></label><input type="number" id="i-Kannada" min="0" max="50" placeholder="0–50"/></div>
+            <div class="form-group"><label>Exam <small>/100</small></label><input type="number" id="e-Kannada" min="0" max="100" placeholder="0–100"/></div>
+          </div>
+        </div>
+
+        <div class="subj-marks-block">
+          <div class="subj-marks-title">📜 Hindi</div>
+          <div class="subj-marks-row">
+            <div class="form-group"><label>Assignment <small>/25</small></label><input type="number" id="a-Hindi" min="0" max="25" placeholder="0–25"/></div>
+            <div class="form-group"><label>Internal <small>/50</small></label><input type="number" id="i-Hindi" min="0" max="50" placeholder="0–50"/></div>
+            <div class="form-group"><label>Exam <small>/100</small></label><input type="number" id="e-Hindi" min="0" max="100" placeholder="0–100"/></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal messages -->
+      <div id="modal-error" class="modal-error hidden"></div>
+      <div id="modal-success" class="modal-success hidden"></div>
+
+      <!-- Footer buttons -->
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modal-back-btn" style="visibility:hidden">← Back</button>
+        <button class="btn-primary" id="modal-next-btn">Next →</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Manage Students Modal ──────────────────────── -->
+  <div class="modal-overlay hidden" id="manage-modal">
+    <div class="modal-box modal-box-wide">
+
+      <div class="modal-header">
+        <span class="modal-title">👥 Manage Students</span>
+        <button class="modal-close" id="manage-modal-close">✕</button>
+      </div>
+
+      <!-- Search bar -->
+      <div class="manage-search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="manage-search" placeholder="Search by name or roll number…" autocomplete="off"/>
+      </div>
+
+      <!-- Student list -->
+      <div id="manage-list-wrap">
+        <div id="manage-loading" class="manage-loading">Loading students…</div>
+        <div id="manage-list"></div>
+        <div id="manage-empty" class="manage-empty hidden">No students found.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Edit Student Modal ──────────────────────── -->
+  <div class="modal-overlay hidden" id="edit-modal">
+    <div class="modal-box">
+
+      <div class="modal-header">
+        <span class="modal-title">✏️ Edit Student</span>
+        <button class="modal-close" id="edit-modal-close">✕</button>
+      </div>
+
+      <!-- Step indicator -->
+      <div class="step-indicator">
+        <div class="step-dot active" id="esdot-1">1</div>
+        <span class="step-label">Basic Details</span>
+        <div class="step-line"></div>
+        <div class="step-dot" id="esdot-2">2</div>
+        <span class="step-label">Marks Entry</span>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="form-step active" id="edit-step-1">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Student Name *</label>
+            <input type="text" id="ef-name" placeholder="e.g. Ravi Kumar"/>
+          </div>
+          <div class="form-group">
+            <label>Roll Number</label>
+            <input type="text" id="ef-roll" placeholder="e.g. 24"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Attendance (%) *</label>
+          <input type="number" id="ef-attendance" min="0" max="100" placeholder="0 – 100"/>
+          <span class="field-hint">Enter percentage between 0 and 100</span>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="form-step" id="edit-step-2">
+        <div class="subj-marks-block">
+          <div class="subj-marks-title">📐 Mathematics</div>
+          <div class="subj-marks-row">
+            <div class="form-group"><label>Assignment <small>/25</small></label><input type="number" id="ea-Maths" min="0" max="25" placeholder="0–25"/></div>
+            <div class="form-group"><label>Internal <small>/50</small></label><input type="number" id="ei-Maths" min="0" max="50" placeholder="0–50"/></div>
+            <div class="form-group"><label>Exam <small>/100</small></label><input type="number" id="ee-Maths" min="0" max="100" placeholder="0–100"/></div>
+          </div>
+        </div>
+        <div class="subj-marks-block">
+          <div class="subj-marks-title">📖 English</div>
+          <div class="subj-marks-row">
+            <div class="form-group"><label>Assignment <small>/25</small></label><input type="number" id="ea-English" min="0" max="25" placeholder="0–25"/></div>
+            <div class="form-group"><label>Internal <small>/50</small></label><input type="number" id="ei-English" min="0" max="50" placeholder="0–50"/></div>
+            <div class="form-group"><label>Exam <small>/100</small></label><input type="number" id="ee-English" min="0" max="100" placeholder="0–100"/></div>
+          </div>
+        </div>
+        <div class="subj-marks-block">
+          <div class="subj-marks-title">🔬 Science</div>
+          <div class="subj-marks-row">
+            <div class="form-group"><label>Assignment <small>/25</small></label><input type="number" id="ea-Science" min="0" max="25" placeholder="0–25"/></div>
+            <div class="form-group"><label>Internal <small>/50</small></label><input type="number" id="ei-Science" min="0" max="50" placeholder="0–50"/></div>
+            <div class="form-group"><label>Exam <small>/100</small></label><input type="number" id="ee-Science" min="0" max="100" placeholder="0–100"/></div>
+          </div>
+        </div>
+        <div class="subj-marks-block">
+          <div class="subj-marks-title">✍️ Kannada</div>
+          <div class="subj-marks-row">
+            <div class="form-group"><label>Assignment <small>/25</small></label><input type="number" id="ea-Kannada" min="0" max="25" placeholder="0–25"/></div>
+            <div class="form-group"><label>Internal <small>/50</small></label><input type="number" id="ei-Kannada" min="0" max="50" placeholder="0–50"/></div>
+            <div class="form-group"><label>Exam <small>/100</small></label><input type="number" id="ee-Kannada" min="0" max="100" placeholder="0–100"/></div>
+          </div>
+        </div>
+        <div class="subj-marks-block">
+          <div class="subj-marks-title">📜 Hindi</div>
+          <div class="subj-marks-row">
+            <div class="form-group"><label>Assignment <small>/25</small></label><input type="number" id="ea-Hindi" min="0" max="25" placeholder="0–25"/></div>
+            <div class="form-group"><label>Internal <small>/50</small></label><input type="number" id="ei-Hindi" min="0" max="50" placeholder="0–50"/></div>
+            <div class="form-group"><label>Exam <small>/100</small></label><input type="number" id="ee-Hindi" min="0" max="100" placeholder="0–100"/></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="edit-modal-error" class="modal-error hidden"></div>
+      <div id="edit-modal-success" class="modal-success hidden"></div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" id="edit-modal-back-btn" style="visibility:hidden">← Back</button>
+        <button class="btn-primary" id="edit-modal-next-btn">Next →</button>
+      </div>
+
+    </div>
+  </div>
+
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

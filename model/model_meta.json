@@ -1,0 +1,28 @@
+{
+  "csv_hash": "4d33b7748cff1ab87401adb6a6aca00e",
+  "accuracy": 0.9231,
+  "feature_columns": [
+    "Attendance",
+    "Assignment_Maths",
+    "Assignment_English",
+    "Assignment_Science",
+    "Assignment_Kannada",
+    "Assignment_Hindi",
+    "Internal_Maths",
+    "Internal_English",
+    "Internal_Science",
+    "Internal_Kannada",
+    "Internal_Hindi",
+    "Exam_Maths",
+    "Exam_English",
+    "Exam_Science",
+    "Exam_Kannada",
+    "Exam_Hindi"
+  ],
+  "classes": [
+    "Average",
+    "Bad",
+    "Fail",
+    "Good"
+  ]
+}
