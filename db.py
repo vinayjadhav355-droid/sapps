@@ -41,7 +41,7 @@ ALL_COLS  = (
 def _get_conn():
     """Open a new PostgreSQL connection."""
     import psycopg2
-    return psycopg2.connect(DATABASE_URL, sslmode="disable")
+    return psycopg2.connect(DATABASE_URL)
 
 
 def init_db():
